@@ -8,11 +8,11 @@
         <version>2.7.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>starling-savings-goal-creator</artifactId>
+    <groupId>com.starling</groupId>
+    <artifactId>savings-goal-creator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>starling-savings-goal-creator</name>
-    <description>starling-savings-goal-creator</description>
+    <name>savings-goal-creator</name>
+    <description>Savings Goal Creator</description>
     <properties>
         <java.version>11</java.version>
     </properties>
