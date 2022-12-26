@@ -11,6 +11,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class SavingsGoalCreationApiResponse {
     private UUID accountId;
-    private String requestOutcomeMessage;
+    private boolean savingsGoalCreated;
+    private String message;
+    private int savingsGoalsCount;
     private SavingsGoalsV2 currentSavingsGoals;
 }

@@ -1,16 +1,11 @@
 package com.starling.savingsgoalcreator.service;
 
-import java.util.Collections;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.starling.savingsgoalcreator.clientmodels.v2.Accounts;
@@ -21,40 +16,30 @@ import com.starling.savingsgoalcreator.clientmodels.v2.SavingsGoalRequestV2;
 import com.starling.savingsgoalcreator.clientmodels.v2.SavingsGoalTransferResponseV2;
 import com.starling.savingsgoalcreator.clientmodels.v2.SavingsGoalsV2;
 import com.starling.savingsgoalcreator.clientmodels.v2.TopUpRequestV2;
-import com.starling.savingsgoalcreator.interceptor.ClientRequestInterceptor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class StarlingApiRequestService {
 
-    private final ClientRequestInterceptor clientRequestInterceptor;
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @Value("${starling.base-url}")
     private String starlingBaseUrl;
 
-    public ResponseEntity<Accounts> getAllAccounts() {
-        String token = clientRequestInterceptor.getBearerToken().getToken();
-        String url = starlingBaseUrl + "/accounts";
-        log.info(url);
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("Authorization", "Bearer " + token);
-
-        // build request
-        HttpEntity request = new HttpEntity(headers);
-
+    public Mono<Accounts> getAllAccounts() {
         // make HTTP call
-        return restTemplate.exchange(url, HttpMethod.GET, request, Accounts.class, 1);
+        WebClient.RequestBodySpec uriSpec = webClient.method(HttpMethod.GET)
+                                                     .uri("/accounts");
+        return uriSpec.retrieve()
+                      .bodyToMono(Accounts.class);
     }
 
-    public ResponseEntity<FeedItems> getAccountTransactions(UUID accountId, String minDate, String maxDate) {
-        String token = clientRequestInterceptor.getBearerToken().getToken();
+    public Mono<FeedItems> getAccountTransactions(UUID accountId, String minDate, String maxDate) {
         String minParam = "minTransactionTimestamp";
         String maxParam = "maxTransactionTimestamp";
         String url = starlingBaseUrl + "/feed/account/" + accountId + "/settled-transactions-between/";
@@ -64,76 +49,40 @@ public class StarlingApiRequestService {
                                                            .build()
                                                            .toUriString();
         log.info(finalUrl);
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("Authorization", "Bearer " + token);
 
-        // build request
-        HttpEntity request = new HttpEntity(headers);
-
-        // make HTTP call
-        return restTemplate.exchange(finalUrl, HttpMethod.GET, request, FeedItems.class, 1);
+        WebClient.RequestBodySpec uriSpec = webClient.method(HttpMethod.GET)
+                                                     .uri(finalUrl);
+        return uriSpec.retrieve()
+                      .bodyToMono(FeedItems.class);
     }
 
-    public ResponseEntity<CreateOrUpdateSavingsGoalResponseV2> createSavingsGoal(UUID accountId, String savingsGoalName) {
-        String token = clientRequestInterceptor.getBearerToken().getToken();
-        String url = starlingBaseUrl + "/account/" + accountId + "/savings-goals";
-        String finalUrl = UriComponentsBuilder.fromUriString(url)
-                                              .build()
-                                              .toUriString();
-        log.info(finalUrl);
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + token);
+    public Mono<CreateOrUpdateSavingsGoalResponseV2> createSavingsGoal(UUID accountId, String savingsGoalName) {
 
         SavingsGoalRequestV2 requestBody = new SavingsGoalRequestV2(savingsGoalName, "GBP");
-        // build request
-        HttpEntity<SavingsGoalRequestV2> request = new HttpEntity<>(requestBody, headers);
-
-        // make HTTP call
-        return restTemplate.exchange(finalUrl, HttpMethod.PUT, request, CreateOrUpdateSavingsGoalResponseV2.class, 1);
+        WebClient.RequestHeadersSpec uriSpec = webClient.method(HttpMethod.PUT)
+                                                        .uri("/account/" + accountId + "/savings-goals")
+                                                        .bodyValue(requestBody);
+        return uriSpec.retrieve()
+                      .bodyToMono(CreateOrUpdateSavingsGoalResponseV2.class);
     }
 
-    public ResponseEntity<SavingsGoalTransferResponseV2> addMoneyIntoSavingsGoal(UUID accountId, UUID savingsGoalId, long amount) {
+    public Mono<SavingsGoalTransferResponseV2> addMoneyIntoSavingsGoal(UUID accountId, UUID savingsGoalId, long amount) {
         UUID transferId = UUID.randomUUID();
-        String token = clientRequestInterceptor.getBearerToken().getToken();
-        String url = starlingBaseUrl + "/account/" + accountId + "/savings-goals/" + savingsGoalId + "/add-money/" + transferId;
-        String finalUrl = UriComponentsBuilder.fromUriString(url)
-                                              .build()
-                                              .toUriString();
-        log.info(finalUrl);
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("Authorization", "Bearer " + token);
-
         TopUpRequestV2 requestBody = new TopUpRequestV2(new CurrencyAndAmount("GBP", amount));
-        // build request
-        HttpEntity<TopUpRequestV2> request = new HttpEntity<>(requestBody, headers);
 
         // make HTTP call
-        return restTemplate.exchange(finalUrl, HttpMethod.PUT, request, SavingsGoalTransferResponseV2.class, 1);
+        WebClient.RequestHeadersSpec uriSpec = webClient.method(HttpMethod.PUT)
+                                                        .uri("/account/" + accountId + "/savings-goals/" + savingsGoalId + "/add-money/" + transferId)
+                                                        .bodyValue(requestBody);
+        return uriSpec.retrieve()
+                      .bodyToMono(SavingsGoalTransferResponseV2.class);
     }
 
-    public ResponseEntity<SavingsGoalsV2> getAllSavingsGoals(UUID accountId) {
-        String token = clientRequestInterceptor.getBearerToken().getToken();
-        String url = starlingBaseUrl + "/account/" + accountId + "/savings-goals";
-        String finalUrl = UriComponentsBuilder.fromUriString(url)
-                                              .build()
-                                              .toUriString();
-        log.info(finalUrl);
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("Authorization", "Bearer " + token);
-
-        // build request
-        HttpEntity request = new HttpEntity(headers);
-
+    public Mono<SavingsGoalsV2> getAllSavingsGoals(UUID accountId) {
         // make HTTP call
-        return restTemplate.exchange(finalUrl, HttpMethod.GET, request, SavingsGoalsV2.class, 1);
+        WebClient.RequestBodySpec uriSpec = webClient.method(HttpMethod.GET)
+                                                     .uri("/account/" + accountId + "/savings-goals");
+        return uriSpec.retrieve()
+                      .bodyToMono(SavingsGoalsV2.class);
     }
 }
