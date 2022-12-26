@@ -2,20 +2,12 @@ package com.starling.savingsgoalcreator.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import com.starling.savingsgoalcreator.clientmodels.v2.Accounts;
-import com.starling.savingsgoalcreator.clientmodels.v2.SavingsGoalsV2;
 import com.starling.savingsgoalcreator.model.SavingsGoalCreationApiResponse;
 
-//import static com.starling.savingsgoalcreator.config.HeaderFilter.put;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
