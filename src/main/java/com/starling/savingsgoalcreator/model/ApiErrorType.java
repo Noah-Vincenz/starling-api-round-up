@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Class used for constructing API errors in {@link com.starling.savingsgoalcreator.controller.SavingsGoalCreatorController}.
+ */
 @Data
 @AllArgsConstructor
 public class ApiErrorType {

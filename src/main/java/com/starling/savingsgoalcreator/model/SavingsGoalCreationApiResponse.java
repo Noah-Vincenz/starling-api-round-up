@@ -7,6 +7,9 @@ import com.starling.savingsgoalcreator.clientmodels.v2.SavingsGoalsV2;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Success response returned from methods in {@link com.starling.savingsgoalcreator.controller.SavingsGoalCreatorController}.
+ */
 @Data
 @AllArgsConstructor
 public class SavingsGoalCreationApiResponse {

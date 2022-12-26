@@ -35,11 +35,7 @@ public class SavingsGoalCreatorController {
     private final SavingsGoalCreatorService service;
 
     /**
-     *
-     * @param savingsGoalRequestBody
-     * @param startDate
-     * @param endDate
-     * @return
+     * For each user account, create a savings goal with given name for all transactions between the minDate and maxDate timestamps.
      */
     @ApiOperation(value = "Create Savings Goal", nickname = "createSavingsGoal", notes = "Used to create a newly named savings goal for transactions across all user accounts in a given time window.")
     @ApiResponses(value = {
@@ -53,19 +49,14 @@ public class SavingsGoalCreatorController {
     )
     public Flux<SavingsGoalCreationApiResponse> createSavingsGoal(
             @Valid @RequestBody SavingsGoalRequestBody savingsGoalRequestBody,
-            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "startDate") String startDate,
-            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "endDate") String endDate) {
-        return service.createSavingsGoal(savingsGoalRequestBody.getSavingsGoalName(), startDate, endDate);
+            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "minDate") String minDate,
+            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "maxDate") String maxDate) {
+        return service.createSavingsGoal(savingsGoalRequestBody.getSavingsGoalName(), minDate, maxDate);
     }
 
 
     /**
-     *
-     * @param savingsGoalRequestBody
-     * @param startDate
-     * @param endDate
-     * @param accountId
-     * @return
+     * For a given user account, create a savings goal with given name for all transactions between the minDate and maxDate timestamps.
      */
     @ApiOperation(value = "Create Savings Goal For Given Account", nickname = "createSavingsGoalForGivenAccount", notes = "Used to create a newly named savings goal for a given account's transactions in a given time window.")
     @ApiResponses(value = {
@@ -79,10 +70,10 @@ public class SavingsGoalCreatorController {
     )
     public Mono<SavingsGoalCreationApiResponse> createSavingsGoalForGivenAccount(
             @Valid @RequestBody SavingsGoalRequestBody savingsGoalRequestBody,
-            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "startDate") String startDate,
-            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "endDate") String endDate,
+            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "minDate") String minDate,
+            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "maxDate") String maxDate,
             @ApiParam(value = "The account id")
             @PathVariable(value = "accountId") UUID accountId) {
-        return service.createSavingsGoal(accountId, savingsGoalRequestBody.getSavingsGoalName(), startDate, endDate);
+        return service.createSavingsGoal(accountId, savingsGoalRequestBody.getSavingsGoalName(), minDate, maxDate);
     }
 }

@@ -14,7 +14,7 @@ public class RequestContextHolder {
     }
 
     /**
-     * Get the {@link org.springframework.http.HttpHeaders} from the current context propagated from the initial request.
+     * Get the {@link org.springframework.http.HttpHeaders} from the current context.
      * @return the HTTP headers object.
      */
     public static Mono<HttpHeaders> getHttpHeaders() {

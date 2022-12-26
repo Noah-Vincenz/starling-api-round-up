@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class WebClientConfiguration {
 
-    @Value("${starling.base-url}")
+    @Value("${starling.base-url.v2}")
     private String starlingBaseUrl;
 
     @Bean

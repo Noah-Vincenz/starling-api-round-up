@@ -2,7 +2,6 @@ package com.starling.savingsgoalcreator.service;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,62 +26,48 @@ import reactor.core.publisher.Mono;
 public class StarlingApiRequestService {
 
     private final WebClient webClient;
-
-    @Value("${starling.base-url}")
-    private String starlingBaseUrl;
+    private static final String CURRENCY_GBP = "GBP";
+    private static final String PARAM_MIN_TX_TIMESTAMP = "minTransactionTimestamp";
+    private static final String PARAM_MAX_TX_TIMESTAMP = "maxTransactionTimestamp";
 
     public Mono<Accounts> getAllAccounts() {
-        // make HTTP call
-        WebClient.RequestBodySpec uriSpec = webClient.method(HttpMethod.GET)
-                                                     .uri("/accounts");
-        return uriSpec.retrieve()
-                      .bodyToMono(Accounts.class);
+        return webClient.method(HttpMethod.GET)
+                        .uri("/accounts")
+                        .retrieve()
+                        .bodyToMono(Accounts.class);
     }
 
     public Mono<FeedItems> getAccountTransactions(UUID accountId, String minDate, String maxDate) {
-        String minParam = "minTransactionTimestamp";
-        String maxParam = "maxTransactionTimestamp";
-        String url = starlingBaseUrl + "/feed/account/" + accountId + "/settled-transactions-between/";
-        String finalUrl = UriComponentsBuilder.fromUriString(url)
-                                                           .queryParam(minParam, minDate)
-                                                           .queryParam(maxParam, maxDate)
-                                                           .build()
-                                                           .toUriString();
-        log.info(finalUrl);
-
-        WebClient.RequestBodySpec uriSpec = webClient.method(HttpMethod.GET)
-                                                     .uri(finalUrl);
-        return uriSpec.retrieve()
-                      .bodyToMono(FeedItems.class);
+        return webClient.method(HttpMethod.GET)
+                        .uri(UriComponentsBuilder.fromUriString("/feed/account/" + accountId + "/settled-transactions-between")
+                                                 .queryParam(PARAM_MIN_TX_TIMESTAMP, minDate)
+                                                 .queryParam(PARAM_MAX_TX_TIMESTAMP, maxDate)
+                                                 .build()
+                                                 .toUriString())
+                        .retrieve()
+                        .bodyToMono(FeedItems.class);
     }
 
     public Mono<CreateOrUpdateSavingsGoalResponseV2> createSavingsGoal(UUID accountId, String savingsGoalName) {
-
-        SavingsGoalRequestV2 requestBody = new SavingsGoalRequestV2(savingsGoalName, "GBP");
-        WebClient.RequestHeadersSpec uriSpec = webClient.method(HttpMethod.PUT)
-                                                        .uri("/account/" + accountId + "/savings-goals")
-                                                        .bodyValue(requestBody);
-        return uriSpec.retrieve()
-                      .bodyToMono(CreateOrUpdateSavingsGoalResponseV2.class);
+        return webClient.method(HttpMethod.PUT)
+                        .uri("/account/" + accountId + "/savings-goals")
+                        .bodyValue(new SavingsGoalRequestV2(savingsGoalName, CURRENCY_GBP))
+                        .retrieve()
+                        .bodyToMono(CreateOrUpdateSavingsGoalResponseV2.class);
     }
 
     public Mono<SavingsGoalTransferResponseV2> addMoneyIntoSavingsGoal(UUID accountId, UUID savingsGoalId, long amount) {
-        UUID transferId = UUID.randomUUID();
-        TopUpRequestV2 requestBody = new TopUpRequestV2(new CurrencyAndAmount("GBP", amount));
-
-        // make HTTP call
-        WebClient.RequestHeadersSpec uriSpec = webClient.method(HttpMethod.PUT)
-                                                        .uri("/account/" + accountId + "/savings-goals/" + savingsGoalId + "/add-money/" + transferId)
-                                                        .bodyValue(requestBody);
-        return uriSpec.retrieve()
-                      .bodyToMono(SavingsGoalTransferResponseV2.class);
+        return webClient.method(HttpMethod.PUT)
+                        .uri("/account/" + accountId + "/savings-goals/" + savingsGoalId + "/add-money/" + UUID.randomUUID())
+                        .bodyValue(new TopUpRequestV2(new CurrencyAndAmount(CURRENCY_GBP, amount)))
+                        .retrieve()
+                        .bodyToMono(SavingsGoalTransferResponseV2.class);
     }
 
     public Mono<SavingsGoalsV2> getAllSavingsGoals(UUID accountId) {
-        // make HTTP call
-        WebClient.RequestBodySpec uriSpec = webClient.method(HttpMethod.GET)
-                                                     .uri("/account/" + accountId + "/savings-goals");
-        return uriSpec.retrieve()
-                      .bodyToMono(SavingsGoalsV2.class);
+        return webClient.method(HttpMethod.GET)
+                        .uri("/account/" + accountId + "/savings-goals")
+                        .retrieve()
+                        .bodyToMono(SavingsGoalsV2.class);
     }
 }
