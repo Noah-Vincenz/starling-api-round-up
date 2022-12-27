@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "c40dba8c-fec3-49af-a7e3-bfda0bc07e8f",
+		"name": "Starling API Create Savings Goal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16237390"
+	},
+	"item": [
+		{
+			"name": "Create Savings Goal",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"savingsGoalName\": \"to_be_inserted\",\n    \"currency\": \"to_be_inserted\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{local-base-url}}/savings-goals?minDate={{min-date}}&maxDate={{max-date}}",
+					"host": [
+						"{{local-base-url}}"
+					],
+					"path": [
+						"savings-goals"
+					],
+					"query": [
+						{
+							"key": "minDate",
+							"value": "{{min-date}}"
+						},
+						{
+							"key": "maxDate",
+							"value": "{{max-date}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Savings Goal For Given Account",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"savingsGoalName\": \"to_be_inserted\",\n    \"currency\": \"to_be_inserted\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{local-base-url}}/savings-goals/{{account-id}}?minDate={{min-date}}&maxDate={{max-date}}",
+					"host": [
+						"{{local-base-url}}"
+					],
+					"path": [
+						"savings-goals",
+						"{{account-id}}"
+					],
+					"query": [
+						{
+							"key": "minDate",
+							"value": "{{min-date}}"
+						},
+						{
+							"key": "maxDate",
+							"value": "{{max-date}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access-token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local-base-url",
+			"value": "http://localhost:8082/v1/api",
+			"type": "string"
+		},
+		{
+			"key": "access-token",
+			"value": "to_be_inserted",
+			"type": "string"
+		},
+		{
+			"key": "account-id",
+			"value": "to_be_inserted",
+			"type": "string"
+		},
+		{
+			"key": "min-date",
+			"value": "to_be_inserted",
+			"type": "string"
+		},
+		{
+			"key": "max-date",
+			"value": "to_be_inserted",
+			"type": "string"
+		}
+	]
+}

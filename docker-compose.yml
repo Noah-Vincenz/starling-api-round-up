@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  savings-goal-creator:
+    container_name: savings-goal-creator
+    build:
+      dockerfile: Dockerfile
+    image: savings-goal-creator:latest
+    ports:
+      - 8082:8082
