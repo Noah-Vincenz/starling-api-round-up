@@ -45,7 +45,7 @@ public final class RequestValidator {
     /**
      * Validate a given request's authorization header.
      */
-    private static Mono<Void> validateRequestAuthorizationHeader(HttpHeaders headers) {
+    protected static Mono<Void> validateRequestAuthorizationHeader(HttpHeaders headers) {
         // if Authorization header is empty or not set to be a Bearer token value
         if (CollectionUtils.isEmpty(headers.get(HttpHeaders.AUTHORIZATION)) ||
             !headers.get(HttpHeaders.AUTHORIZATION).get(0).contains("Bearer ")) {
@@ -57,7 +57,7 @@ public final class RequestValidator {
     /**
      * Validate a given request's query parameters.
      */
-    private static Mono<Void> validateRequestQueryParams(Map<String, String> queryParams) {
+    protected static Mono<Void> validateRequestQueryParams(Map<String, String> queryParams) {
         if (queryParams.size() != 2 ||
             !queryParams.containsKey(QUERY_PARAM_MIN_DATE) ||
             !queryParams.containsKey(QUERY_PARAM_MAX_DATE)) {
@@ -73,7 +73,7 @@ public final class RequestValidator {
     /**
      * Validate a given request body.
      */
-    private static Mono<Void> validateRequestBody(SavingsGoalCreationApiRequestBody requestBody) {
+    protected static Mono<Void> validateRequestBody(SavingsGoalCreationApiRequestBody requestBody) {
         if (StringUtils.isEmpty(requestBody.getSavingsGoalName())) {
             return Mono.error(new ApiRestRunTimeErrorException(String.format(ERROR_MSG_MANDATORY_FIELD_IN_REQUEST, "savingsGoalName"), HttpStatus.BAD_REQUEST));
         }
