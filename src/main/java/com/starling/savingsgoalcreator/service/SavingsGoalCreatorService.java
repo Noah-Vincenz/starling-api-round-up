@@ -58,6 +58,12 @@ public class SavingsGoalCreatorService {
      * @return The outcome of creating a new savings goal for a given account the user owns
      */
     public Mono<SavingsGoalCreationApiResponse> createSavingsGoal(UUID accountId, SavingsGoalCreationApiRequestBody requestBody, String minDate, String maxDate) {
+        log.info("Attempting to create savings goal with name [{}] and currency [{}] for account [{}] for all transactions between [{}] and [{}]",
+                 requestBody.getSavingsGoalName(),
+                 requestBody.getCurrency(),
+                 accountId,
+                 minDate,
+                 maxDate);
         String savingsGoalName = requestBody.getSavingsGoalName();
         // 1. get existing savings goals
         return starlingApiRequestService.getAllSavingsGoals(accountId).flatMap(currentSavingsGoals -> {

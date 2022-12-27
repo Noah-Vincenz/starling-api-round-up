@@ -53,8 +53,8 @@ public class SavingsGoalCreatorController {
     )
     public Flux<SavingsGoalCreationApiResponse> createSavingsGoal(
             @Valid @RequestBody SavingsGoalCreationApiRequestBody requestBody,
-            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "minDate") String minDate,
-            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "maxDate") String maxDate) {
+            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "minDate", required=false) String minDate,
+            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "maxDate", required=false) String maxDate) {
         return validateRequest(requestBody).thenMany(service.createSavingsGoal(requestBody, minDate, maxDate))
                                            .doOnError(throwable -> {
                                                String errorMessage = "Failed to create savings goal";
@@ -81,8 +81,8 @@ public class SavingsGoalCreatorController {
     )
     public Mono<SavingsGoalCreationApiResponse> createSavingsGoalForGivenAccount(
             @Valid @RequestBody SavingsGoalCreationApiRequestBody requestBody,
-            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "minDate") String minDate,
-            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "maxDate") String maxDate,
+            @ApiParam("__Mandatory__. Used transactions will be on or after this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "minDate", required=false) String minDate,
+            @ApiParam("__Mandatory__. Used transactions will be on or before this date (yyyy-MM-dd'T'HH:mm:ss.SSSZ).") @Valid @RequestParam(value = "maxDate", required=false) String maxDate,
             @ApiParam(value = "The account id")
             @PathVariable(value = "accountId") UUID accountId) {
         return validateRequest(requestBody).then(service.createSavingsGoal(accountId, requestBody, minDate, maxDate))
