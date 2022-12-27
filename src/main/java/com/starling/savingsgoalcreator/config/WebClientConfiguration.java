@@ -30,6 +30,7 @@ public class WebClientConfiguration {
                         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .filter(ExchangeFilterFunction.ofRequestProcessor(WebClientConfiguration::addBearerTokenAuth))
+                        .filter(ExchangeFilterFunction.ofRequestProcessor(WebClientConfiguration::loggingFilter))
                         .build();
     }
 
@@ -44,5 +45,14 @@ public class WebClientConfiguration {
                    .map(headersFromContext -> ClientRequest.from(request)
                                                            .headers(currentHeaders -> currentHeaders.add(HttpHeaders.AUTHORIZATION, Objects.requireNonNull(headersFromContext.get(HttpHeaders.AUTHORIZATION)).get(0)))
                                                            .build());
+    }
+
+    /**
+     * For any outgoing request we want to log the details of the requests that are being executed.
+     * @param request the client request to be logged
+     */
+    private static Mono<ClientRequest> loggingFilter(ClientRequest request) {
+        log.info("Sending outgoing {} request to {}", request.method(), request.url());
+        return Mono.just(request);
     }
 }
