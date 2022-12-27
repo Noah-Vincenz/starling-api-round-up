@@ -1,25 +1,31 @@
 package com.starling.savingsgoalcreator.exception;
 
-import com.starling.savingsgoalcreator.model.ApiErrorType;
+import org.springframework.http.HttpStatus;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @Data
 public class ApiRestRunTimeErrorException extends RuntimeException {
-    private ApiErrorType errorType;
-    private Object[] args;
-    private Throwable cause;
+    private final String message;
+    private final HttpStatus status;
+    private final Throwable cause;
 
-    public ApiRestRunTimeErrorException(ApiErrorType apiErrorType, Object... args) {
-        this(apiErrorType, (Throwable)null, args);
+    public ApiRestRunTimeErrorException(String message, HttpStatus status) {
+        this(message, status, null);
     }
 
-    public ApiRestRunTimeErrorException(ApiErrorType apiErrorType, Throwable cause, Object... args) {
-        super(String.format(apiErrorType.getMessage(), args));
-        this.errorType = apiErrorType;
+    public ApiRestRunTimeErrorException(String message, Throwable cause) {
+        this(message, null, cause);
+    }
+
+    public ApiRestRunTimeErrorException(String message, HttpStatus status, Throwable cause) {
+        super(message);
+        this.message = message;
         this.cause = cause;
-        this.args = args;
+        this.status = status;
     }
 }

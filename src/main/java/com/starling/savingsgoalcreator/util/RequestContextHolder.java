@@ -1,4 +1,4 @@
-package com.starling.savingsgoalcreator.config;
+package com.starling.savingsgoalcreator.util;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.server.ServerWebExchange;
@@ -25,7 +25,7 @@ public class RequestContextHolder {
      * Get the {@link ServerWebExchange} from the current context.
      * @return the current exchange object.
      */
-    private static Mono<ServerWebExchange> getServerWebExchange() {
+    public static Mono<ServerWebExchange> getServerWebExchange() {
         return Mono.deferContextual(Mono::just)
                    .map(contextView -> contextView.get(CONTEXT_KEY_SERVER_WEB_EXCHANGE));
     }

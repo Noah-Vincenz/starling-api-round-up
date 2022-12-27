@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.starling.savingsgoalcreator.clientmodels.v2.CreateOrUpdateSavingsGoalResponseV2;
 import com.starling.savingsgoalcreator.clientmodels.v2.FeedItems;
+import com.starling.savingsgoalcreator.model.SavingsGoalCreationApiRequestBody;
 import com.starling.savingsgoalcreator.model.SavingsGoalCreationApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,12 @@ public class SavingsGoalCreatorService {
      * <li>for each account id, return the outcome</li>
      * @return The outcome of creating a new savings goal for every account the user owns.
      */
-    public Flux<SavingsGoalCreationApiResponse> createSavingsGoal(String savingsGoalName, String minDate, String maxDate) {
+    public Flux<SavingsGoalCreationApiResponse> createSavingsGoal(SavingsGoalCreationApiRequestBody requestBody, String minDate, String maxDate) {
         return starlingApiRequestService.getAllAccounts().flatMapMany(accounts -> {
             List<Mono<SavingsGoalCreationApiResponse>> listOfResponses = new ArrayList<>();
             accounts.getAccounts().forEach(account -> {
                 // for each account create a savings goal
-                Mono<SavingsGoalCreationApiResponse> responseMono = createSavingsGoal(account.getAccountUid(), savingsGoalName, minDate, maxDate);
+                Mono<SavingsGoalCreationApiResponse> responseMono = createSavingsGoal(account.getAccountUid(), requestBody, minDate, maxDate);
                 listOfResponses.add(responseMono);
             });
             // combine multiple lists of Mono responses into a single list ("Flux") of those responses
@@ -56,7 +57,8 @@ public class SavingsGoalCreatorService {
      * <li>6. for the given account id, return the outcome of the process above</li>
      * @return The outcome of creating a new savings goal for a given account the user owns
      */
-    public Mono<SavingsGoalCreationApiResponse> createSavingsGoal(UUID accountId, String savingsGoalName, String minDate, String maxDate) {
+    public Mono<SavingsGoalCreationApiResponse> createSavingsGoal(UUID accountId, SavingsGoalCreationApiRequestBody requestBody, String minDate, String maxDate) {
+        String savingsGoalName = requestBody.getSavingsGoalName();
         // 1. get existing savings goals
         return starlingApiRequestService.getAllSavingsGoals(accountId).flatMap(currentSavingsGoals -> {
             boolean savingsGoalNameExists = currentSavingsGoals.getSavingsGoalList()
@@ -74,7 +76,7 @@ public class SavingsGoalCreatorService {
                                                 .flatMap(transactions -> {
                                                     long accumulatedRoundUpsForThisAccount = getAccumulatedRoundUpsForListOfTransactions(transactions);
                                                     // 3. create new savings goal
-                                                    var createSavingsGoalResponse = starlingApiRequestService.createSavingsGoal(accountId, savingsGoalName);
+                                                    var createSavingsGoalResponse = starlingApiRequestService.createSavingsGoal(accountId, requestBody);
                                                     return Mono.zip(Mono.just(accumulatedRoundUpsForThisAccount), createSavingsGoalResponse);
                                                 })
                                                 .flatMap(tuple -> {
@@ -82,7 +84,7 @@ public class SavingsGoalCreatorService {
                                                     CreateOrUpdateSavingsGoalResponseV2 savingsGoalCreationResponse = tuple.getT2();
                                                     UUID savingsGoalId = savingsGoalCreationResponse.getSavingsGoalUid();
                                                     // 4. transfer accumulated round-up sum into savings goal
-                                                    var transferResponse = starlingApiRequestService.addMoneyIntoSavingsGoal(accountId, savingsGoalId, accumulatedRoundUpsForThisAccount);
+                                                    var transferResponse = starlingApiRequestService.addMoneyIntoSavingsGoal(accountId, savingsGoalId, requestBody.getCurrency(), accumulatedRoundUpsForThisAccount);
                                                     return Mono.zip(Mono.just(accumulatedRoundUpsForThisAccount), transferResponse);
                                                 })
                                                 .flatMap(tuple -> {
