@@ -72,7 +72,7 @@ You can easily run tests by executing `mvn test`
 ### Future improvements
 
 1. After 24 hours (1 hour in production) the access token expires. Currently, the user will have to head to their sandbox customer's account in the developer portal, press the `Refresh Token` button, 
-and replace their Postman collection's access token with the newly generated access token. In the future we could add a Postman Pre-request script in the Postman collection that verifies the expiry time of the current access token
+and replace their Postman collection's access token with the newly generated access token. In the future we could add a Postman Pre-request script in the Postman collection that validates the expiry time of the current access token
 and hits the refresh token endpoint to receive a new access token when the current access token has expired. The Postman collection variables can then be updated with the newly created access token. 
 2. Currently, the Starling API models are located in the `src/main/java/com/starling/savingsgoalcreator/clientmodels/v2` package. 
 We could potentially make these more accurate, for example by creating enums for account types. Additionally, if the client models exist online, these could be pulled from there, 
