@@ -11,7 +11,10 @@ This amount is then transferred into a [savings goal](https://www.starlingbank.c
 
 
 ### Assumptions
-- 
+- the user's access token is passed into the incoming request via an Authorization header
+- the time period for transactions to be used for the savings goal amount calculation is specified by the `minDate` and `maxDate` query parameters
+- only 'settled' transactions (from the `/settled-transactions-between` endpoint) are used for the calculation
+- only outgoing transactions (with `direction` field set to `OUT`) are used for the calculation
 
 
 ### Prerequisites
