@@ -15,9 +15,10 @@ This amount is then transferred into a [savings goal](https://www.starlingbank.c
 - the time period for transactions to be used for the savings goal amount calculation is specified by the `minDate` and `maxDate` query parameters
 - only 'settled' transactions (from the `/settled-transactions-between` endpoint) are used for the calculation
 - only outgoing transactions (with `direction` field set to `OUT`) are used for the calculation
+<br><br>
+----
 
-
-### Prerequisites
+## Prerequisites
 
 - Java 11 including maven (see [Java 11 Downloads](https://www.oracle.com/java/technologies/downloads/#java11))
 - Docker Desktop (see [Getting Started Guide](https://www.docker.com/get-started/))
@@ -32,14 +33,14 @@ Additionally, in order to run the application locally, it is assumed that you ha
 - generated some account transactions via the `auto-simulate` button
 
 
-### Project setup
+## Project setup
 
 - Clone this git repository into your local workspace
 - Open a terminal window, and change directory into the project root directory
 - Execute `mvn clean install -DskipTests` in order to install any required project dependencies
 
 
-### Start up the application
+## Start up the application
 
 First of all, ensure that no other application is currently running on port 8082 on your local machine.
 There are different ways of running the application
@@ -54,7 +55,7 @@ There are different ways of running the application
 - Execute `mvn spring-boot:run` 
 
 
-### How to create a savings goal
+## How to create a savings goal
 
 It is recommended that you have Postman installed on your local machine for this in order to hit the API. 
 Otherwise, you can also use your terminal to send requests to the running API using standard CURL (see https://curl.se/docs/httpscripting.html).
@@ -66,6 +67,9 @@ Otherwise, you can also use your terminal to send requests to the running API us
 - Send any of the two PUT requests in the collection to create a new savings goal
 > **_NOTE:_** Your access token from the developer account may have expired. If this is the case, head to your sandbox customer's account, press the `Refresh Token` button, and replace your access token with the newly generated access token
 
+<br>
+
+----
 
 ### Running tests locally
 
