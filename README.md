@@ -84,3 +84,7 @@ and hits the refresh token endpoint to receive a new access token when the curre
 2. Currently, the Starling API models are located in the `src/main/java/com/starling/savingsgoalcreator/clientmodels/v2` package. 
 We could potentially make these more accurate, for example by creating enums for account types. Additionally, if the client models exist online, these could be pulled from there, 
 instead of having them exist locally as static models.
+3. Allow users to pass in round up
+4. Maintain map: currency enum -> round up (different currencies have different decimal places)
+5. Handle currency issue when trying to transfer a certain currency into a goal with another currency
+6. Instead of not doing anything when savings goal exists, transfer amount into existing one (for job to transfer monthly for example)
